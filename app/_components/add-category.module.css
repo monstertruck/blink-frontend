@@ -1,0 +1,59 @@
+.form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.input {
+  flex: 1 1 200px;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background: var(--background);
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.input:focus {
+  border-color: color-mix(in srgb, var(--foreground) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.submit {
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.submit:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status {
+  font-size: 0.85rem;
+}
+
+.statusOk {
+  color: color-mix(in srgb, #137333 75%, var(--foreground));
+}
+
+.statusError {
+  color: #d4351c;
+}
