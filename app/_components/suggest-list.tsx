@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createLink, deleteLink, setLinkStatus } from "@/lib/api/client";
 import type { LinkResponse, LinkStatus } from "@/lib/api/types";
 import { CategorySelect } from "./category-select";
@@ -33,7 +32,6 @@ function SuggestCard({
   link: LinkResponse;
   categories: string[];
 }) {
-  const router = useRouter();
   const [pendingStatus, setPendingStatus] = useState<LinkStatus | null>(null);
   const [deleted, setDeleted] = useState(false);
   const [recategorizing, setRecategorizing] = useState(false);
@@ -49,17 +47,13 @@ function SuggestCard({
     if (link.id === null) return;
     if (next === displayStatus) return;
     setPendingStatus(next);
-    setLinkStatus(link.id, next)
-      .then(() => router.refresh())
-      .catch(() => setPendingStatus(null));
+    setLinkStatus(link.id, next).catch(() => setPendingStatus(null));
   }
 
   function handleDelete() {
     if (link.id === null) return;
     setDeleted(true);
-    deleteLink(link.id)
-      .then(() => router.refresh())
-      .catch(() => setDeleted(false));
+    deleteLink(link.id).catch(() => setDeleted(false));
   }
 
   async function handleRecategorize() {
@@ -72,7 +66,7 @@ function SuggestCard({
         ...(link.title ? { title: link.title } : {}),
         skip_summary: true,
       });
-      router.refresh();
+      setDeleted(true);
     } catch {
       setRecategorizing(false);
     }
