@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import styles from "./nav.module.css";
 
 const TABS: { href: string; label: string }[] = [
-  { href: "/", label: "Read" },
+  { href: "/", label: "Suggest" },
+  { href: "/read", label: "Read" },
   { href: "/add", label: "Add" },
   { href: "/categories", label: "Categories" },
 ];

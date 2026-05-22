@@ -4,6 +4,7 @@ export type LinkRequest = {
   url: string;
   title?: string;
   summary?: string;
+  skip_summary?: boolean;
 };
 
 export type LinkResponse = {
