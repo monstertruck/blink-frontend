@@ -52,7 +52,7 @@ The Bookmark-LINK frontend. Scaffolded with `create-next-app` using the App Rout
 
 Three routes, with a sticky top nav defined in `app/layout.tsx` (`app/_components/nav.tsx`):
 
-- **`/`** (`app/page.tsx`) — "Read links". Server Component. Fetches links + categories in parallel. Each row uses `CategorySelect` to recategorize.
+- **`/`** (`app/page.tsx`) — "Read links". Server Component. Fetches up to 500 links + categories in parallel, then hands them to `LinksBrowser` (client) which owns search + filter + paging state. Default shows the most recent 10 (sorted by `id desc` since the backend has no `ORDER BY`); a "Show 10 more" control extends it.
 - **`/add`** (`app/add/page.tsx`) — "Add link". Renders `BulkSubmit`, which is a textarea-driven, paste-aware bulk submitter (see below).
 - **`/categories`** (`app/categories/page.tsx`) — "Categories". Lists every category with its link count, plus the `AddCategory` form.
 
