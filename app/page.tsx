@@ -29,7 +29,7 @@ export default async function ReadLinks() {
     <main className={styles.page}>
       <header className={styles.header}>
         <h1 className={styles.title}>Read links</h1>
-        <p className={styles.subtitle}>Browse and triage what you’ve saved.</p>
+        <p className={styles.subtitle}>Browse what you’ve saved, and read some links.</p>
       </header>
 
       {fetchError ? (
