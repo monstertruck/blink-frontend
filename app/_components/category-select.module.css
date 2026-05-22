@@ -1,0 +1,45 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  letter-spacing: 0.01em;
+  padding: 0.22rem 1.5rem 0.22rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 70%, var(--foreground));
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='currentColor' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 0.55rem;
+  transition: background-color 0.12s ease;
+}
+
+.select:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.select:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.error {
+  font-size: 0.78rem;
+  color: var(--error);
+}
