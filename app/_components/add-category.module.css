@@ -1,0 +1,65 @@
+.form {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.input {
+  flex: 1 1 200px;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--border-strong);
+  background: var(--background);
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.submit {
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--muted-fg);
+}
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status {
+  font-size: 0.85rem;
+}
+
+.statusOk {
+  color: var(--success);
+}
+
+.statusError {
+  color: var(--error);
+}
