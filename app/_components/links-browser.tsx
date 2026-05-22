@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { setLinkStatus } from "@/lib/api/client";
 import type { LinkResponse, LinkStatus } from "@/lib/api/types";
 import { CategorySelect } from "./category-select";
 import styles from "./links-browser.module.css";
@@ -114,7 +116,29 @@ function LinkRow({
   link: LinkResponse;
   categories: string[];
 }) {
+  const router = useRouter();
+  const [pendingStatus, setPendingStatus] = useState<LinkStatus | null>(null);
+  const displayStatus = pendingStatus ?? link.status;
+
+  // Drop optimistic state once the refreshed server data matches it.
+  useEffect(() => {
+    if (pendingStatus !== null && pendingStatus === link.status) {
+      setPendingStatus(null);
+    }
+  }, [link.status, pendingStatus]);
+
+  function updateStatus(next: LinkStatus) {
+    if (link.id === null) return;
+    if (next === displayStatus) return;
+    setPendingStatus(next);
+    setLinkStatus(link.id, next)
+      .then(() => router.refresh())
+      .catch(() => setPendingStatus(null));
+  }
+
   const display = link.title?.trim() || link.url;
+  const canToggle = link.id !== null;
+
   return (
     <li className={styles.row}>
       <div className={styles.rowTop}>
@@ -123,6 +147,7 @@ function LinkRow({
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => updateStatus("read")}
         >
           {display}
         </a>
@@ -136,7 +161,24 @@ function LinkRow({
           ) : (
             <span className={styles.badge}>{link.category}</span>
           )}
-          <span className={styles.status}>{link.status}</span>
+          <button
+            type="button"
+            className={`${styles.status} ${
+              displayStatus === "read" ? styles.statusRead : styles.statusUnread
+            }`}
+            onClick={() =>
+              updateStatus(displayStatus === "read" ? "unread" : "read")
+            }
+            disabled={!canToggle}
+            aria-label={`Mark as ${
+              displayStatus === "read" ? "unread" : "read"
+            }`}
+            title={`Click to mark as ${
+              displayStatus === "read" ? "unread" : "read"
+            }`}
+          >
+            {displayStatus}
+          </button>
         </div>
       </div>
       {link.summary ? (

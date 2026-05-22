@@ -125,9 +125,34 @@
 }
 
 .status {
+  font: inherit;
   font-variant-caps: all-small-caps;
   font-size: 0.74rem;
   letter-spacing: 0.06em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.status:disabled {
+  cursor: default;
+}
+
+.status:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border);
+}
+
+.statusUnread {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.statusRead {
   color: var(--muted-fg);
 }
 
