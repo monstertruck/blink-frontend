@@ -1,47 +1,49 @@
 import { listCategories, listLinks } from "@/lib/api/client";
-import type { CategoryCount, LinkResponse } from "@/lib/api/types";
-import { LinksBrowser } from "./_components/links-browser";
+import type { LinkResponse } from "@/lib/api/types";
+import { SuggestList } from "./_components/suggest-list";
 import styles from "./page.module.css";
 
-// The link list is per-user, mutable state — render fresh on every request
-// instead of letting Next.js prerender it at build time.
 export const dynamic = "force-dynamic";
 
-export default async function ReadLinks() {
-  let links: LinkResponse[] = [];
-  let categories: CategoryCount[] = [];
+function pickRandom(links: LinkResponse[], n: number): LinkResponse[] {
+  const shuffled = [...links];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, n);
+}
+
+export default async function Suggest() {
+  let suggestions: LinkResponse[] = [];
+  let categories: string[] = [];
   let fetchError: string | null = null;
 
   try {
-    [links, categories] = await Promise.all([
-      listLinks({ limit: 500 }),
+    const [unread, cats] = await Promise.all([
+      listLinks({ status: "unread", limit: 500 }),
       listCategories(true),
     ]);
+    suggestions = pickRandom(unread, 10);
+    categories = cats.map((c) => c.category).sort((a, b) => a.localeCompare(b));
   } catch (err) {
     fetchError = err instanceof Error ? err.message : String(err);
   }
 
-  const categoryNames = categories
-    .map((c) => c.category)
-    .sort((a, b) => a.localeCompare(b));
-
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Read links</h1>
-        <p className={styles.subtitle}>Browse what you’ve saved, and read some links.</p>
+        <h1 className={styles.title}>Suggested</h1>
       </header>
 
       {fetchError ? (
-        <p className={styles.error}>
-          Couldn’t reach the backend: {fetchError}
-        </p>
-      ) : links.length === 0 ? (
+        <p className={styles.error}>Couldn't reach the backend: {fetchError}</p>
+      ) : suggestions.length === 0 ? (
         <p className={styles.empty}>
-          No links saved yet. Head to <strong>Add</strong> to paste some.
+          No unread links. Head to <strong>Add</strong> to save some.
         </p>
       ) : (
-        <LinksBrowser links={links} categories={categoryNames} />
+        <SuggestList links={suggestions} categories={categories} />
       )}
     </main>
   );
