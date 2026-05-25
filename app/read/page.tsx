@@ -12,7 +12,7 @@ export default async function ReadLinks() {
 
   try {
     [links, categories] = await Promise.all([
-      listLinks({ limit: 500 }),
+      listLinks({ limit: 5000 }),
       listCategories(true),
     ]);
   } catch (err) {
