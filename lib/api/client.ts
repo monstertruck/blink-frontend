@@ -75,10 +75,11 @@ export type CreateLinkResult = {
 
 export async function createLink(
   body: LinkRequest,
+  signal?: AbortSignal,
 ): Promise<CreateLinkResult> {
   const { data, status } = await request<LinkResponse>(
     "/links",
-    { method: "POST", body: JSON.stringify(body) },
+    { method: "POST", body: JSON.stringify(body), signal },
     [409],
   );
   return { link: data, alreadyExisted: status === 409 };

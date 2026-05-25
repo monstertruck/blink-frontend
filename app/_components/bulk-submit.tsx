@@ -7,13 +7,13 @@ import {
   type FormEvent,
 } from "react";
 import { useRouter } from "next/navigation";
-import { createLink, describeApiError } from "@/lib/api/client";
+import { createLink, updateLink, describeApiError } from "@/lib/api/client";
 import styles from "./bulk-submit.module.css";
 
 type LineState =
   | { kind: "pending" }
   | { kind: "saving" }
-  | { kind: "saved"; alreadyExisted: boolean; title: string | null }
+  | { kind: "saved"; alreadyExisted: boolean; title: string | null; fallback?: boolean }
   | { kind: "error"; message: string };
 
 type Totals = { saved: number; existed: number; failed: number };
@@ -74,12 +74,25 @@ export function BulkSubmit() {
             title: r.link.title,
           },
         }));
-      } catch (err) {
-        failed++;
-        setLineStates((prev) => ({
-          ...prev,
-          [url]: { kind: "error", message: describeApiError(err) },
-        }));
+      } catch {
+        try {
+          const r = await createLink({ url, title: url, skip_summary: true });
+          if (r.link.id !== null) {
+            await updateLink(r.link.id, { category: "uncategorized" });
+          }
+          if (r.alreadyExisted) existed++;
+          else saved++;
+          setLineStates((prev) => ({
+            ...prev,
+            [url]: { kind: "saved", alreadyExisted: r.alreadyExisted, title: r.link.title, fallback: true },
+          }));
+        } catch (fallbackErr) {
+          failed++;
+          setLineStates((prev) => ({
+            ...prev,
+            [url]: { kind: "error", message: describeApiError(fallbackErr) },
+          }));
+        }
       }
     }
 
@@ -164,6 +177,7 @@ function LineRow({
     icon = "✓";
     iconClass = state.alreadyExisted ? styles.iconExists : styles.iconSaved;
     if (state.alreadyExisted) detail = "already saved";
+    else if (state.fallback) detail = "uncategorized";
     else if (state.title) detail = state.title;
   } else if (state?.kind === "error") {
     icon = "✗";

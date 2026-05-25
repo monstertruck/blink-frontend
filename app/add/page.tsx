@@ -1,4 +1,5 @@
 import { BulkSubmit } from "../_components/bulk-submit";
+import { LinkDumpSubmit } from "../_components/linkdump-submit";
 import styles from "../page.module.css";
 
 export const metadata = {
@@ -16,6 +17,8 @@ export default function AddLinkPage() {
       </header>
 
       <BulkSubmit />
+
+      <LinkDumpSubmit />
     </main>
   );
 }
