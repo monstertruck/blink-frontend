@@ -23,7 +23,7 @@ export function CategorySelect({ linkId, current, options }: Props) {
     if (pending !== null && pending === current) setPending(null);
   }, [current, pending]);
 
-  const displayed = pending ?? current;
+  const displayed = pending ?? (current || "uncategorized");
   const optionList = options.includes(displayed)
     ? options
     : [displayed, ...options];

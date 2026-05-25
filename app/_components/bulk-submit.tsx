@@ -24,6 +24,7 @@ export function BulkSubmit() {
   const [lineStates, setLineStates] = useState<Record<string, LineState>>({});
   const [submitting, setSubmitting] = useState(false);
   const [totals, setTotals] = useState<Totals | null>(null);
+  const [skipSummary, setSkipSummary] = useState(false);
 
   const lines = useMemo(() => parseLines(text), [text]);
 
@@ -63,7 +64,7 @@ export function BulkSubmit() {
     for (const url of lines) {
       setLineStates((prev) => ({ ...prev, [url]: { kind: "saving" } }));
       try {
-        const r = await createLink({ url });
+        const r = await createLink({ url, skip_summary: skipSummary });
         if (r.alreadyExisted) existed++;
         else saved++;
         setLineStates((prev) => ({
@@ -129,6 +130,16 @@ export function BulkSubmit() {
           autoFocus
           disabled={submitting}
         />
+      </label>
+
+      <label className={styles.checkboxLabel}>
+        <input
+          type="checkbox"
+          checked={skipSummary}
+          onChange={(e) => setSkipSummary(e.target.checked)}
+          disabled={submitting}
+        />
+        Skip AI summary
       </label>
 
       <div className={styles.actions}>

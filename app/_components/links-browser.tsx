@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { setLinkStatus } from "@/lib/api/client";
+import { createLink, deleteLink, setLinkStatus } from "@/lib/api/client";
 import type { LinkResponse, LinkStatus } from "@/lib/api/types";
 import { CategorySelect } from "./category-select";
 import styles from "./links-browser.module.css";
@@ -28,7 +28,7 @@ export function LinksBrowser({ links, categories }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return links
-      .filter((l) => !category || l.category === category)
+      .filter((l) => !category || (l.category || "uncategorized") === category)
       .filter((l) => !status || l.status === status)
       .filter((l) => !q || matches(l, q));
   }, [links, query, category, status]);
@@ -118,6 +118,8 @@ function LinkRow({
 }) {
   const router = useRouter();
   const [pendingStatus, setPendingStatus] = useState<LinkStatus | null>(null);
+  const [deleted, setDeleted] = useState(false);
+  const [recategorizing, setRecategorizing] = useState(false);
   const displayStatus = pendingStatus ?? link.status;
 
   // Drop optimistic state once the refreshed server data matches it.
@@ -136,11 +138,37 @@ function LinkRow({
       .catch(() => setPendingStatus(null));
   }
 
+  function handleDelete() {
+    if (link.id === null) return;
+    setDeleted(true);
+    deleteLink(link.id)
+      .then(() => router.refresh())
+      .catch(() => setDeleted(false));
+  }
+
+  async function handleRecategorize() {
+    if (link.id === null) return;
+    setRecategorizing(true);
+    try {
+      await deleteLink(link.id);
+      await createLink({
+        url: link.url,
+        ...(link.title ? { title: link.title } : {}),
+        skip_summary: true,
+      });
+      router.refresh();
+    } catch {
+      setRecategorizing(false);
+    }
+  }
+
   const display = link.title?.trim() || link.url;
   const canToggle = link.id !== null;
 
+  if (deleted) return null;
+
   return (
-    <li className={styles.row}>
+    <li className={`${styles.row}${recategorizing ? ` ${styles.rowBusy}` : ""}`}>
       <div className={styles.rowTop}>
         <a
           className={styles.title}
@@ -178,6 +206,26 @@ function LinkRow({
             }`}
           >
             {displayStatus}
+          </button>
+          <button
+            type="button"
+            className={styles.recategorizeBtn}
+            onClick={handleRecategorize}
+            disabled={link.id === null || recategorizing}
+            aria-label="Re-categorize link"
+            title="Delete and re-add to re-run categorization"
+          >
+            {recategorizing ? "…" : "↻"}
+          </button>
+          <button
+            type="button"
+            className={styles.deleteBtn}
+            onClick={handleDelete}
+            disabled={link.id === null || recategorizing}
+            aria-label="Delete link"
+            title="Delete link"
+          >
+            ×
           </button>
         </div>
       </div>
